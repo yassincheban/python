@@ -5,3 +5,19 @@ AGENTS.md
 
 __pycache__/
 *.py[cod]
+
+.DS_Store
+upload-*.zip
+
+.env
+.env.local
+.env.*.local
+.venv/
+venv/
+*.log
+
+tree.png
+tree_saved.png
+tree_loaded.png
+final_tree.png
+deleted_tree.png
