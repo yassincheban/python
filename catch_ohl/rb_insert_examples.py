@@ -6,6 +6,8 @@ Enthalten sind:
 - left_rotate(), right_rotate()
 - fix_insert()
 - insert()
+- insert_many()
+- insert_or_replace()
 - inorder()
 
 Klausurbezug:
@@ -294,6 +296,74 @@ def insert(root, key, value=None):
     return fix_insert(root, added)
 
 
+def find_node(root, key):
+    """
+    Sucht einen Knoten nach key.
+
+    Parameter:
+    root: Wurzel.
+    key: gesuchter Schluessel.
+
+    Rueckgabe:
+    Knoten oder None.
+
+    Logik:
+    Diese kleine Hilfsfunktion wird fuer die Duplikat-Variante benutzt.
+    """
+    current = root
+    while not is_empty(current):
+        if key == current.key:
+            return current
+        if key < current.key:
+            current = current.left
+        else:
+            current = current.right
+    return None
+
+
+def insert_or_replace(root, key, value=None):
+    """
+    Fuegt einen key ein oder ersetzt den value bei vorhandenem key.
+
+    Parameter:
+    root: Wurzel.
+    key: neuer oder vorhandener Schluessel.
+    value: neuer Wert.
+
+    Rueckgabe:
+    Neue Wurzel.
+
+    Logik:
+    Manche Klausurvarianten erlauben keine doppelten Keys. Dann wird zuerst
+    gesucht. Wenn der key existiert, wird nur der value geaendert.
+    """
+    found = find_node(root, key)
+    if found is not None:
+        found.value = value
+        return root
+    return insert(root, key, value)
+
+
+def insert_many(root, items):
+    """
+    Fuegt mehrere Eintraege nacheinander ein.
+
+    Parameter:
+    root: Wurzel.
+    items: Liste von Tupeln wie [(10, "10")].
+
+    Rueckgabe:
+    Neue Wurzel.
+
+    Logik:
+    Die Schleife ruft fuer jedes Tupel die normale insert()-Funktion auf.
+    Dadurch wird nach jedem Einfuegen wieder repariert.
+    """
+    for key, value in items:
+        root = insert(root, key, value)
+    return root
+
+
 def inorder(root):
     """
     Gibt key und color in Inorder zurueck.
@@ -318,4 +388,9 @@ if __name__ == "__main__":
     for key in [10, 20, 30, 15, 5, 25, 40]:
         root = insert(root, key, str(key))
         print("after", key, inorder(root))
+    root = insert_or_replace(root, 25, "changed")
     print("root", root.key, root.color)
+    print("value 25", find_node(root, 25).value)
+
+    other = insert_many(nil(), [(7, "seven"), (3, "three"), (9, "nine")])
+    print("many", inorder(other))

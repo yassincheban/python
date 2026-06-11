@@ -5,6 +5,8 @@ Thema: Baumdaten als JSON speichern und laden.
 Enthalten sind:
 - insert()
 - preorder_items()
+- to_dict()
+- from_dict()
 - dump()
 - load()
 - inorder_keys()
@@ -183,6 +185,46 @@ def preorder_items(root):
     )
 
 
+def to_dict(root):
+    """
+    Wandelt den Baum in ein flaches Dictionary um.
+
+    Parameter:
+    root: Wurzel.
+
+    Rueckgabe:
+    Dictionary wie {"20": "20"}.
+
+    Logik:
+    Das ist die gleiche Vorbereitung wie beim Speichern in eine Datei, nur
+    ohne open() und json.dump().
+    """
+    data = {}
+    for key, value in preorder_items(root):
+        data[str(key)] = value
+    return data
+
+
+def from_dict(data):
+    """
+    Baut einen Baum aus einem flachen Dictionary.
+
+    Parameter:
+    data: Dictionary mit String-Keys.
+
+    Rueckgabe:
+    Wurzel des neu aufgebauten Baums.
+
+    Logik:
+    JSON macht aus Keys Texte. Fuer den Suchbaum werden die Keys wieder mit
+    int(key) in Zahlen umgewandelt.
+    """
+    root = nil()
+    for key, value in data.items():
+        root = insert(root, int(key), value)
+    return root
+
+
 def dump(root, filename):
     """
     Speichert den Baum als flaches JSON-Dictionary.
@@ -198,9 +240,7 @@ def dump(root, filename):
     JSON-Schluessel muessen Strings sein. Deshalb wird key mit str(key)
     gespeichert.
     """
-    data = {}
-    for key, value in preorder_items(root):
-        data[str(key)] = value
+    data = to_dict(root)
     with open(filename, "w") as file:
         json.dump(data, file, indent=4)
 
@@ -219,11 +259,8 @@ def load(filename):
     Beim Lesen sind JSON-Keys Strings. Fuer Baumvergleiche muessen sie wieder
     int sein, also int(key).
     """
-    root = nil()
     with open(filename, "r") as file:
-        for key, value in json.load(file).items():
-            root = insert(root, int(key), value)
-    return root
+        return from_dict(json.load(file))
 
 
 def inorder_keys(root):
@@ -252,5 +289,7 @@ if __name__ == "__main__":
     filename = "/tmp/catch_ohl_tree.json"
     dump(root, filename)
     loaded = load(filename)
+    loaded_from_dict = from_dict(to_dict(root))
     print("saved to", filename)
     print("loaded keys", inorder_keys(loaded))
+    print("dict keys", inorder_keys(loaded_from_dict))

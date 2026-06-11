@@ -4,7 +4,8 @@ Thema: Traversals, also verschiedene Reihenfolgen zum Durchlaufen eines Baums.
 
 Enthalten sind:
 - inorder(), preorder(), postorder(), levelorder()
-- visit_post_order(), visit_level_order()
+- levelorder_with_level()
+- visit_in_order(), visit_post_order(), visit_level_order()
 - einfache RBTree-Knoten mit NIL-Kindern
 
 Klausurbezug:
@@ -207,6 +208,57 @@ def levelorder(root):
     return result
 
 
+def levelorder_with_level(root):
+    """
+    Gibt keys zusammen mit ihrer Ebene zurueck.
+
+    Parameter:
+    root: Wurzel des Baums.
+
+    Rueckgabe:
+    Liste von Tupeln, zum Beispiel (20, 0).
+
+    Logik:
+    In der Queue liegt nicht nur der Knoten, sondern auch seine Ebene.
+    Kinder bekommen immer level + 1.
+    """
+    if is_empty(root):
+        return []
+
+    result = []
+    queue = [(root, 0)]
+    while queue:
+        node, level = queue.pop(0)
+        result.append((node.key, level))
+        if not is_empty(node.left):
+            queue.append((node.left, level + 1))
+        if not is_empty(node.right):
+            queue.append((node.right, level + 1))
+    return result
+
+
+def visit_in_order(root, callback):
+    """
+    Ruft callback fuer jeden key in Inorder auf.
+
+    Parameter:
+    root: Wurzel oder Teilbaum.
+    callback: Funktion, die einen key bekommt.
+
+    Rueckgabe:
+    None.
+
+    Logik:
+    Die Reihenfolge ist links, aktueller Knoten, rechts. Gesammelt wird nicht
+    in der Funktion, sondern im callback.
+    """
+    if is_empty(root):
+        return
+    visit_in_order(root.left, callback)
+    callback(root.key)
+    visit_in_order(root.right, callback)
+
+
 def visit_post_order(root, callback):
     """
     Ruft callback fuer jeden key in Postorder auf.
@@ -260,6 +312,11 @@ if __name__ == "__main__":
     print("pre", preorder(root))
     print("post", postorder(root))
     print("level", levelorder(root))
+    print("level with level", levelorder_with_level(root))
+
+    seen = []
+    visit_in_order(root, seen.append)
+    print("callback in", seen)
 
     seen = []
     visit_post_order(root, seen.append)

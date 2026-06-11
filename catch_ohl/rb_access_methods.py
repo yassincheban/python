@@ -5,7 +5,7 @@ Thema: Methoden in einer RBTree-Klasse, wie sie in einer Klausur vorkommen koenn
 Enthalten sind:
 - RBTreeNode
 - RBTree
-- max(), min(), find(), between()
+- max(), min(), find_node(), find(), between(), count_between()
 - visit_post_order(), visit_level_order()
 
 Klausurbezug:
@@ -120,9 +120,10 @@ class RBTree:
     Attribute:
     _root ist die Wurzel des Baums.
 
-    Methoden:
-    insert_without_fix baut Beispielbaeume.
-    max, min, find, between und Visitor-Methoden sind klausurnahe Aufgaben.
+Methoden:
+insert_without_fix baut Beispielbaeume.
+max, min, find, find_node, between, count_between und Visitor-Methoden
+sind klausurnahe Aufgaben.
     """
 
     def __init__(self):
@@ -215,6 +216,30 @@ class RBTree:
             node = node.left
         return node.key
 
+    def find_node(self, key):
+        """
+        Sucht den Knoten zu einem key.
+
+        Parameter:
+        key: gesuchter Schluessel.
+
+        Rueckgabe:
+        Gefundener RBTreeNode.
+
+        Logik:
+        Der Vergleich entscheidet links oder rechts. Wird NIL erreicht, gibt
+        es den key nicht und KeyError wird geworfen.
+        """
+        node = self._root
+        while not node.is_nil:
+            if key == node.key:
+                return node
+            if key < node.key:
+                node = node.left
+            else:
+                node = node.right
+        raise KeyError(key)
+
     def find(self, key):
         """
         Sucht den value zu einem key.
@@ -226,18 +251,10 @@ class RBTree:
         value des gefundenen Knotens.
 
         Logik:
-        Der Vergleich entscheidet links oder rechts. Wird NIL erreicht, gibt
-        es den key nicht und KeyError wird geworfen.
+        Diese Variante gibt nicht den ganzen Knoten zurueck, sondern nur den
+        gespeicherten Wert. Die Suche selbst steckt in find_node().
         """
-        node = self._root
-        while not node.is_nil:
-            if key == node.key:
-                return node.value
-            if key < node.key:
-                node = node.left
-            else:
-                node = node.right
-        raise KeyError(key)
+        return self.find_node(key).value
 
     def _between_rec(self, node, low, high, result):
         """
@@ -282,6 +299,22 @@ class RBTree:
         result = []
         self._between_rec(self._root, low, high, result)
         return result
+
+    def count_between(self, low, high):
+        """
+        Zaehlt alle keys im Bereich [low, high].
+
+        Parameter:
+        low: untere Grenze.
+        high: obere Grenze.
+
+        Rueckgabe:
+        Anzahl als int.
+
+        Logik:
+        Die Methode nutzt between() und zaehlt danach die Listenelemente.
+        """
+        return len(self.between(low, high))
 
     def _visit_post_order_rec(self, node, callback):
         """
@@ -354,7 +387,9 @@ if __name__ == "__main__":
     print("min", tree.min())
     print("max", tree.max())
     print("find 25", tree.find(25))
+    print("find node 25", tree.find_node(25).key)
     print("between 10..30", tree.between(10, 30))
+    print("count between 10..30", tree.count_between(10, 30))
 
     seen = []
     tree.visit_post_order(seen.append)

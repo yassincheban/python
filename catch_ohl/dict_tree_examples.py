@@ -7,6 +7,8 @@ Enthalten sind:
 - preorder()
 - postorder()
 - levelorder()
+- count_values()
+- inorder_list(), preorder_list(), postorder_list(), levelorder_list()
 
 Klausurbezug:
 Das passt zur Aufgabe simpleBinaryTree. Man uebt Dictionaries, Rekursion,
@@ -100,6 +102,107 @@ def levelorder(tree):
     return result
 
 
+def count_values(tree):
+    """
+    Zaehlt alle Knoten im Dictionary-Baum.
+
+    Parameter:
+    tree: Dictionary-Knoten oder None.
+
+    Rueckgabe:
+    Anzahl der echten Knoten als int.
+
+    Logik:
+    Bei None ist der Teilbaum leer. Sonst zaehlt man den aktuellen Knoten,
+    den linken Teilbaum und den rechten Teilbaum.
+    """
+    if tree is None:
+        return 0
+    return 1 + count_values(tree["left"]) + count_values(tree["right"])
+
+
+def inorder_list(tree):
+    """
+    Erstellt eine Inorder-Liste.
+
+    Parameter:
+    tree: Dictionary-Knoten oder None.
+
+    Rueckgabe:
+    Liste mit den Werten.
+
+    Logik:
+    Es ist die gleiche Reihenfolge wie bei inorder(), aber ohne String-Aufbau.
+    """
+    if tree is None:
+        return []
+    return inorder_list(tree["left"]) + [tree["value"]] + inorder_list(tree["right"])
+
+
+def preorder_list(tree):
+    """
+    Erstellt eine Preorder-Liste.
+
+    Parameter:
+    tree: Dictionary-Knoten oder None.
+
+    Rueckgabe:
+    Liste mit den Werten.
+
+    Logik:
+    Erst aktueller Wert, dann linker Teilbaum, dann rechter Teilbaum.
+    """
+    if tree is None:
+        return []
+    return [tree["value"]] + preorder_list(tree["left"]) + preorder_list(tree["right"])
+
+
+def postorder_list(tree):
+    """
+    Erstellt eine Postorder-Liste.
+
+    Parameter:
+    tree: Dictionary-Knoten oder None.
+
+    Rueckgabe:
+    Liste mit den Werten.
+
+    Logik:
+    Erst beide Kinder, dann der aktuelle Wert.
+    """
+    if tree is None:
+        return []
+    return postorder_list(tree["left"]) + postorder_list(tree["right"]) + [tree["value"]]
+
+
+def levelorder_list(tree):
+    """
+    Erstellt eine Levelorder-Liste.
+
+    Parameter:
+    tree: Dictionary-Knoten oder None.
+
+    Rueckgabe:
+    Liste mit den Werten Ebene fuer Ebene.
+
+    Logik:
+    Die Queue ist wie bei levelorder(), nur das Ergebnis ist eine Liste.
+    """
+    if tree is None:
+        return []
+
+    result = []
+    queue = [tree]
+    while queue:
+        node = queue.pop(0)
+        result.append(node["value"])
+        if node["left"] is not None:
+            queue.append(node["left"])
+        if node["right"] is not None:
+            queue.append(node["right"])
+    return result
+
+
 if __name__ == "__main__":
     tree = {
         "value": 20,
@@ -110,3 +213,6 @@ if __name__ == "__main__":
     print("preorder:\n" + preorder(tree), end="")
     print("postorder:\n" + postorder(tree), end="")
     print("levelorder:\n" + levelorder(tree), end="")
+    print("count", count_values(tree))
+    print("inorder list", inorder_list(tree))
+    print("levelorder list", levelorder_list(tree))

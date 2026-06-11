@@ -6,6 +6,8 @@ Enthalten sind:
 - die Klasse Node
 - die Hilfsfunktion nil()
 - die Hilfsfunktion leaf()
+- has_nil_children()
+- set_left(), set_right()
 
 Klausurbezug:
 Diese Datei uebt Klassen, __init__, Attribute, einfache Properties und den
@@ -144,8 +146,64 @@ def leaf(key, value=None, color=Node.RED, parent=None):
     return node
 
 
+def has_nil_children(node):
+    """
+    Prueft, ob beide Kinder NIL-Knoten sind.
+
+    Parameter:
+    node: Knoten, der geprueft wird.
+
+    Rueckgabe:
+    True, wenn left und right NIL sind.
+
+    Logik:
+    Diese Frage kommt oft bei Blattknoten vor. Ein echter Blattknoten im
+    RBTree hat nicht None als Kinder, sondern zwei NIL-Knoten.
+    """
+    return node is not None and node.left.is_nil and node.right.is_nil
+
+
+def set_left(parent, child):
+    """
+    Setzt ein linkes Kind und den Parent-Link.
+
+    Parameter:
+    parent: Elternknoten.
+    child: neuer linker Kindknoten.
+
+    Rueckgabe:
+    None.
+
+    Logik:
+    Nach dem Setzen muss auch child.parent angepasst werden.
+    """
+    parent.left = child
+    child.parent = parent
+
+
+def set_right(parent, child):
+    """
+    Setzt ein rechtes Kind und den Parent-Link.
+
+    Parameter:
+    parent: Elternknoten.
+    child: neuer rechter Kindknoten.
+
+    Rueckgabe:
+    None.
+
+    Logik:
+    Das ist die gespiegelte Variante von set_left().
+    """
+    parent.right = child
+    child.parent = parent
+
+
 if __name__ == "__main__":
     root = leaf(20, "twenty", Node.BLACK)
-    root.left = leaf(10, "ten", Node.RED, root)
+    set_left(root, leaf(10, "ten", Node.RED))
+    set_right(root, leaf(30, "thirty", Node.RED))
     print(root.key, root.color, root.left.key, root.left.parent.key)
     print("left nil?", root.left.left.is_nil)
+    print("root has nil children?", has_nil_children(root))
+    print("left has nil children?", has_nil_children(root.left))

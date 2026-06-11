@@ -4,7 +4,9 @@ Thema: Loeschen in einem Red-Black Tree.
 
 Enthalten sind:
 - search(), minimum(), transplant()
+- successor()
 - delete()
+- delete_if_exists()
 - fix_delete()
 - Rotationen und ein kleines insert() fuer Testbaeume
 
@@ -342,6 +344,37 @@ def minimum(node):
     return node
 
 
+def successor(node):
+    """
+    Findet den naechstgroesseren Knoten.
+
+    Parameter:
+    node: Startknoten.
+
+    Rueckgabe:
+    Nachfolgerknoten.
+
+    Logik:
+    Wenn rechts ein Teilbaum existiert, liegt der Nachfolger dort ganz links.
+    Sonst geht man ueber parent nach oben, bis man von links kommt.
+    """
+    if is_empty(node):
+        raise KeyError("empty tree")
+
+    if not is_empty(node.right):
+        return minimum(node.right)
+
+    current = node
+    parent = node.parent
+    while parent is not None and current == parent.right:
+        current = parent
+        parent = parent.parent
+
+    if parent is None:
+        raise KeyError("no successor")
+    return parent
+
+
 def transplant(root, old, replacement):
     """
     Ersetzt old durch replacement im Baum.
@@ -493,6 +526,27 @@ def delete(root, key):
     return root
 
 
+def delete_if_exists(root, key):
+    """
+    Loescht einen key, falls er vorhanden ist.
+
+    Parameter:
+    root: Wurzel.
+    key: zu loeschender Schluessel.
+
+    Rueckgabe:
+    Tupel aus neuer Wurzel und True/False.
+
+    Logik:
+    Die normale delete()-Funktion wirft KeyError. Diese Variante faengt den
+    Fehler ab und meldet mit False, dass nichts geloescht wurde.
+    """
+    try:
+        return delete(root, key), True
+    except KeyError:
+        return root, False
+
+
 def inorder(root):
     """
     Gibt key und color in Inorder zurueck.
@@ -517,6 +571,7 @@ if __name__ == "__main__":
         root = insert(root, key, str(key))
 
     print("start", inorder(root))
+    print("successor 25", successor(search(root, 25)).key)
     for key in [5, 30, 20]:
         root = delete(root, key)
         print("delete", key, inorder(root))
@@ -525,3 +580,5 @@ if __name__ == "__main__":
         delete(root, 99)
     except KeyError as exc:
         print("missing", exc)
+    root, deleted = delete_if_exists(root, 99)
+    print("delete if exists 99", deleted, inorder(root))

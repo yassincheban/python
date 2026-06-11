@@ -6,9 +6,11 @@ Enthalten sind:
 - Node, nil(), new_node()
 - insert_bst()
 - find()
+- find_or_default()
 - min_key()
 - max_key()
 - between()
+- between_as_string()
 
 Klausurbezug:
 Diese Methoden sind typisch, weil sie einfache Python-Logik pruefen:
@@ -194,6 +196,28 @@ def find(root, key):
     raise KeyError(key)
 
 
+def find_or_default(root, key, default=None):
+    """
+    Sucht einen Wert und gibt sonst einen Ersatzwert zurueck.
+
+    Parameter:
+    root: Wurzel des Baums.
+    key: gesuchter Schluessel.
+    default: Wert, falls key nicht gefunden wird.
+
+    Rueckgabe:
+    Gefundener value oder default.
+
+    Logik:
+    Die normale find()-Funktion wirft KeyError. Diese Variante faengt den
+    Fehler ab und gibt stattdessen default zurueck.
+    """
+    try:
+        return find(root, key)
+    except KeyError:
+        return default
+
+
 def min_key(root):
     """
     Findet den kleinsten Schluessel.
@@ -268,6 +292,28 @@ def between(root, low, high):
     return result
 
 
+def between_as_string(root, low, high):
+    """
+    Gibt alle keys im Bereich als String zurueck.
+
+    Parameter:
+    root: Wurzel oder Teilbaum.
+    low: untere Grenze.
+    high: obere Grenze.
+
+    Rueckgabe:
+    String mit einem key pro Zeile.
+
+    Logik:
+    Die Funktion benutzt between() und baut daraus das Format wie in
+    simpleBinaryTree.
+    """
+    result = ""
+    for key in between(root, low, high):
+        result += f"{key}\n"
+    return result
+
+
 if __name__ == "__main__":
     root = nil()
     for key in [20, 10, 5, 15, 30, 25, 40]:
@@ -276,7 +322,9 @@ if __name__ == "__main__":
     print("min", min_key(root))
     print("max", max_key(root))
     print("find 25", find(root, 25))
+    print("find 99 default", find_or_default(root, 99, "fehlt"))
     print("between 10..30", between(root, 10, 30))
+    print("between string:\n" + between_as_string(root, 10, 30), end="")
     one = new_node(7, "seven", BLACK)
     print("one node", min_key(one), max_key(one))
     print("empty between", between(nil(), 1, 9))

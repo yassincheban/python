@@ -4,7 +4,9 @@ Thema: Einfache Pruefungen fuer Red-Black Trees.
 
 Enthalten sind:
 - count_color()
+- count_nil()
 - validate_bst_order()
+- validate_parent_links()
 - black_height()
 - no_red_red()
 - validate_rb_tree()
@@ -177,6 +179,27 @@ def count_color(root, color):
     )
 
 
+def count_nil(root):
+    """
+    Zaehlt NIL-Knoten im Baum.
+
+    Parameter:
+    root: Wurzel oder Teilbaum.
+
+    Rueckgabe:
+    Anzahl der NIL-Knoten.
+
+    Logik:
+    NIL-Knoten sind keine Datenknoten, aber fuer RBTree-Aufgaben wichtig.
+    Bei einem echten Knoten werden linke und rechte Seite weitergezaehlt.
+    """
+    if root is None:
+        return 0
+    if root.is_nil:
+        return 1
+    return count_nil(root.left) + count_nil(root.right)
+
+
 def validate_bst_order(root, low=None, high=None):
     """
     Prueft die Suchbaum-Reihenfolge.
@@ -200,6 +223,32 @@ def validate_bst_order(root, low=None, high=None):
         return False
     return validate_bst_order(root.left, low, root.key) and validate_bst_order(
         root.right, root.key, high
+    )
+
+
+def validate_parent_links(root, parent=None):
+    """
+    Prueft, ob alle Parent-Links stimmen.
+
+    Parameter:
+    root: aktueller Knoten.
+    parent: erwarteter Elternknoten.
+
+    Rueckgabe:
+    True, wenn alle Links passen.
+
+    Logik:
+    Jeder Knoten muss auf den Elternknoten zeigen, von dem aus er erreicht
+    wurde. Auch NIL-Knoten duerfen einen parent haben.
+    """
+    if root is None:
+        return True
+    if root.parent != parent:
+        return False
+    if root.is_nil:
+        return True
+    return validate_parent_links(root.left, root) and validate_parent_links(
+        root.right, root
     )
 
 
@@ -277,6 +326,8 @@ if __name__ == "__main__":
     print("valid", validate_rb_tree(root))
     print("red count", count_color(root, RED))
     print("black count", count_color(root, BLACK))
+    print("nil count", count_nil(root))
+    print("parent links", validate_parent_links(root))
 
     root.left.left = node(5, RED, root.left)
     print("red-red valid?", validate_rb_tree(root))

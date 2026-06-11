@@ -5,6 +5,8 @@ Thema: Getter und Setter in einer einfachen Knotenklasse.
 Enthalten sind:
 - die Klasse ExamNode
 - die Funktion connect_left()
+- die Funktion connect_right()
+- die Funktion is_left_child()
 
 Klausurbezug:
 In den Aufgaben kommen oft Properties wie key, value, left, right und parent
@@ -262,10 +264,50 @@ def connect_left(parent, child):
     child.parent = parent
 
 
+def connect_right(parent, child):
+    """
+    Verbindet parent und child als rechtes Kind.
+
+    Parameter:
+    parent: Elternknoten.
+    child: neuer rechter Kindknoten.
+
+    Rueckgabe:
+    None.
+
+    Logik:
+    Es werden beide Richtungen gesetzt: parent.right und child.parent.
+    """
+    parent.right = child
+    child.parent = parent
+
+
+def is_left_child(node):
+    """
+    Prueft, ob node ein linkes Kind ist.
+
+    Parameter:
+    node: Knoten, der geprueft wird.
+
+    Rueckgabe:
+    True oder False.
+
+    Logik:
+    Ein Knoten ist nur dann linkes Kind, wenn er einen parent hat und dieser
+    parent genau diesen Knoten als left gespeichert hat.
+    """
+    return node.parent is not None and node.parent.left == node
+
+
 if __name__ == "__main__":
     root = ExamNode(20, "twenty")
     left = ExamNode(10, "ten", "RED")
+    right = ExamNode(30, "thirty", "RED")
     connect_left(root, left)
+    connect_right(root, right)
     root.value = "changed"
     print(root.key, root.value, root.color)
     print(root.left.key, root.left.parent.key)
+    print(root.right.key, root.right.parent.key)
+    print("left is left child?", is_left_child(left))
+    print("right is left child?", is_left_child(right))
