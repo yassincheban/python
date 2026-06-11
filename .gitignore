@@ -1,0 +1,7 @@
+AGENTS.md
+.agents/
+.codex/
+.coes/
+
+__pycache__/
+*.py[cod]
